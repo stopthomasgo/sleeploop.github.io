@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SleepLoop — Spotify Bedtime Looper for Mac</title>
+  <meta name="description" content="A macOS playback scheduler for Spotify. Schedule a song to play at bedtime. Privacy-first, no account access, one-time purchase.">
+  <meta property="og:title" content="SleepLoop — Spotify Bedtime Looper for Mac">
+  <meta property="og:description" content="A macOS playback scheduler for Spotify. Schedule a song to play. Privacy-first, no account access.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sleeploop.org">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+  <style>
+    :root {
+      --bg: #0d0d0f;
+      --surface: #1a1a20;
+      --text: #eaeaea;
+      --muted: #888;
+      --accent: #9b5de5;
+      --accent-glow: rgba(155, 93, 229, 0.15);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+
+    /* Nav */
+    nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 24px; max-width: 800px; margin: 0 auto;
+    }
+    .logo { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
+    .logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 20px; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+
+    /* Hero */
+    .hero { text-align: center; padding: 80px 24px 60px; }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem); font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 16px;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero p { font-size: 1.15rem; color: var(--muted); max-width: 480px; margin: 0 auto 32px; }
+    .buy-btn {
+      display: inline-block; background: var(--accent); color: #fff;
+      padding: 14px 36px; border-radius: 10px; font-size: 1.1rem;
+      font-weight: 600; text-decoration: none; transition: all 0.2s;
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+    .buy-btn:hover { transform: translateY(-1px); box-shadow: 0 0 40px var(--accent-glow); }
+    .price-tag { display: block; margin-top: 12px; font-size: 0.85rem; color: var(--muted); }
+
+    /* Screenshot */
+    .screenshot-wrap {
+      margin: 0 auto 80px; max-width: 600px;
+      background: var(--surface); border-radius: 16px; padding: 12px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    }
+    .screenshot-wrap img { width: 100%; border-radius: 8px; display: block; }
+
+    /* Sections */
+    section { padding: 64px 0; }
+    section h2 {
+      text-align: center; font-size: 1.6rem; font-weight: 700;
+      letter-spacing: -0.02em; margin-bottom: 40px;
+    }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 32px; }
+    .step {
+      background: var(--surface); border-radius: 14px; padding: 32px 24px;
+      text-align: center;
+    }
+    .step .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--accent-glow); color: var(--accent);
+      font-weight: 700; font-size: 1.1rem; margin-bottom: 16px;
+    }
+    .step h3 { font-size: 1.05rem; margin-bottom: 8px; }
+    .step p { font-size: 0.9rem; color: var(--muted); }
+
+    /* Features grid */
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+    .feature {
+      background: var(--surface); border-radius: 12px; padding: 24px;
+      display: flex; gap: 14px; align-items: flex-start;
+    }
+    .feature .icon { font-size: 1.5rem; flex-shrink: 0; }
+    .feature h3 { font-size: 0.95rem; margin-bottom: 4px; }
+    .feature p { font-size: 0.85rem; color: var(--muted); }
+
+    /* Pricing */
+    .pricing { text-align: center; }
+    .price-box {
+      display: inline-block; background: var(--surface); border-radius: 16px;
+      padding: 40px 48px; border: 1px solid rgba(255,255,255,0.06);
+    }
+    .price-box .amount { font-size: 2.5rem; font-weight: 800; }
+    .price-box .perk { font-size: 0.9rem; color: var(--muted); margin-bottom: 24px; }
+    .price-box ul { list-style: none; text-align: left; margin-bottom: 24px; }
+    .price-box li { padding: 6px 0; font-size: 0.9rem; }
+    .price-box li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+
+    /* CTA footer */
+    .cta { text-align: center; padding: 80px 24px; }
+    .cta h2 { font-size: 1.5rem; margin-bottom: 12px; }
+    .cta p { color: var(--muted); margin-bottom: 24px; }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 32px 24px; text-align: center; font-size: 0.85rem; color: var(--muted);
+    }
+    footer a { color: var(--muted); text-decoration: none; margin: 0 12px; }
+    footer a:hover { color: var(--text); }
+
+    /* App Store badge */
+    .store-badges { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+    .appstore-badge img { height: 44px; }
+    .buy-btn-secondary {
+      display: inline-flex; align-items: center;
+      background: var(--surface); color: var(--text);
+      padding: 10px 24px; border-radius: 10px; font-size: 0.95rem;
+      font-weight: 600; text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.2s;
+    }
+    .buy-btn-secondary:hover { border-color: var(--accent); }
+
+    @media (max-width: 500px) {
+      .nav-links { gap: 12px; }
+      .hero { padding: 40px 16px 30px; }
+      .price-box { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Sleep<span>Loop</span></div>
+  <div class="nav-links">
+    <a href="#how-it-works">How It Works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="/sleeploop-privacy/">Privacy</a>
+    <a href="/sleeploop-privacy/support.html">Support</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>Loop One Song.<br>Sleep Through the Night.<span>It's that simple.</span></h1>
+  <p>Pick a song in Spotify, set your bedtime, and SleepLoop keeps it playing on repeat all night — while Spotify sits quietly at volume zero.</p>
+  <a href="#pricing" class="buy-btn">Get SleepLoop — $1.99</a>
+  <span class="price-tag">One-time purchase. Free upgrades forever.</span>
+</section>
+
+<div class="container">
+  <div class="screenshot-wrap">
+    <!-- Replace with actual screenshot -->
+    <div style="background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);height:340px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:0.9rem;">
+      [App Screenshot — Replace with &lt;img src="screenshot.png"&gt;]
+    </div>
+  </div>
+</div>
+
+<section id="how-it-works" class="container">
+  <h2>How It Works</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="num">1</div>
+      <h3>Paste a Spotify Link</h3>
+      <p>Paste any track or album link from Spotify. SleepLoop grabs the song info automatically.</p>
+    </div>
+    <div class="step">
+      <div class="num">2</div>
+      <h3>Set Your Bedtime</h3>
+      <p>Choose when you want the loop to start. SleepLoop wakes Spotify at the right time.</p>
+    </div>
+    <div class="step">
+      <div class="num">3</div>
+      <h3>Sleep</h3>
+      <p>Your song loops silently in the background. System audio stays at zero. Wake up and your music is right where you left it.</p>
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <h2>Why SleepLoop?</h2>
+  <div class="features">
+    <div class="feature">
+      <div class="icon">🔇</div>
+      <div>
+        <h3>Volume Control</h3>
+        <p>SleepLoop mutes your system audio and restores it afterward. No surprises in the morning.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="icon">📊</div>
+      <div>
+        <h3>Personal Stats</h3>
+        <p>Keep track of your nightly listening habits. Which songs helped you sleep the longest? Lives in your menu bar.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="icon">🔒</div>
+      <div>
+        <h3>100% Private</h3>
+        <p>Runs entirely on your Mac. No accounts, no analytics, no data leaves your computer.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="icon">🔁</div>
+      <div>
+        <h3>Always-On Mode</h3>
+        <p>Premium feature: loop any song, any time — no schedule needed. Just enable it.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="icon">⚡</div>
+      <div>
+        <h3>Light & Fast</h3>
+        <p>Universal binary for Apple Silicon and Intel. Lives in your menu bar, uses minimal resources.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="icon">🛡️</div>
+      <div>
+        <h3>No Spotify Login</h3>
+        <p>Uses AppleScript to talk to the Spotify desktop app. We never see your account.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="container pricing">
+  <h2>One Price, Forever</h2>
+  <div class="price-box">
+    <div class="amount">$1.99</div>
+    <p class="perk">One-time purchase. No subscription. No ads. No funny business.</p>
+    <ul>
+      <li>Loop any song on repeat all night</li>
+      <li>Scheduled start time</li>
+      <li>Always-On mode for daytime looping</li>
+      <li>Personal listening stats & sleep soundtrack history</li>
+      <li>Menu bar app — stays out of your way</li>
+      <li>Free updates for life</li>
+    </ul>
+    <div class="store-badges">
+      <a href="#" class="buy-btn">Buy on Gumroad — $1.99</a>
+      <span style="display:flex;align-items:center;color:var(--muted);font-size:0.9rem;gap:8px;">
+        or
+        <a href="#" class="buy-btn-secondary">Get it on the Mac App Store</a>
+      </span>
+    </div>
+    <p style="margin-top:16px;font-size:0.8rem;color:var(--muted);">
+      Purchased already? <a href="/sleeploop-privacy/support.html" style="color:var(--accent);">Restore your purchase</a>
+    </p>
+  </div>
+</section>
+
+<section class="cta container">
+  <h2>Ready to sleep better?</h2>
+  <p>Loop your favorite song tonight. Your white noise, your meditation track, that one song that fixes your brain chemistry — whatever helps you sleep.</p>
+  <a href="#pricing" class="buy-btn">Get SleepLoop — $1.99</a>
+</section>
+
+<footer>
+  <a href="/sleeploop-privacy/">Privacy Policy</a>
+  <a href="/sleeploop-privacy/support.html">Support</a>
+  <a href="mailto:sleeploop@proton.me">Contact</a>
+  <p style="margin-top:16px;">© 2026 SleepLoop. All rights reserved.</p>
+</footer>
+
+<!-- Gumroad overlay (replace data-product-id with real Gumroad product ID) -->
+<!--
+<script src="https://gumroad.com/js/gumroad.js"></script>
+<script>
+  // Replace with real Gumroad product ID after creating the listing
+  document.querySelector('.buy-btn[href="#pricing"]').addEventListener('click', function(e) {
+    e.preventDefault();
+    // Gumroad overlay: Gumroad.overlay({ productPermalink: 'REPLACE_WITH_GUMROAD_PRODUCT_ID' });
+    window.open('https://gumroad.com/l/REPLACE_WITH_GUMROAD_PRODUCT_ID', '_blank');
+  });
+</script>
+-->
+
+</body>
+</html>
