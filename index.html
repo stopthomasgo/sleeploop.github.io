@@ -252,10 +252,10 @@
       <li>Power-Play — dual streaming <em>(Coming Soon)</em></li>
     </ul>
     <div class="store-badges">
-      <a href="#" class="buy-btn">Buy on Gumroad — $4.99</a>
+      <a href="#" class="buy-btn" id="buy-website">Buy Now — $4.99</a>
       <span style="display:flex;align-items:center;color:var(--muted);font-size:0.9rem;gap:8px;">
         or
-        <a href="#" class="buy-btn-secondary">Get it on the Mac App Store</a>
+        <a href="#" class="buy-btn-secondary" id="buy-appstore">Get it on the Mac App Store</a>
       </span>
     </div>
     <p style="margin-top:16px;font-size:0.8rem;color:var(--muted);">
@@ -273,18 +273,11 @@
   <p style="margin-top:8px;">© 2026 SleepLoop. All rights reserved.</p>
 </footer>
 
-<!-- Gumroad overlay (replace data-product-id with real Gumroad product ID) -->
-<!--
-<script src="https://gumroad.com/js/gumroad.js"></script>
+<!-- Purchase links — replace REPLACE_WITH_GUMROAD_SLUG and REPLACE_WITH_APP_ID before launch -->
 <script>
-  // Replace with real Gumroad product ID after creating the listing
-  document.querySelector('.buy-btn[href="#pricing"]').addEventListener('click', function(e) {
-    e.preventDefault();
-    // Gumroad overlay: Gumroad.overlay({ productPermalink: 'REPLACE_WITH_GUMROAD_PRODUCT_ID' });
-    window.open('https://gumroad.com/l/REPLACE_WITH_GUMROAD_PRODUCT_ID', '_blank');
-  });
+  document.getElementById('buy-website').href = 'https://buy.sleeploop.org/l/REPLACE_WITH_GUMROAD_SLUG';
+  document.getElementById('buy-appstore').href = 'https://apps.apple.com/app/idREPLACE_WITH_APP_ID';
 </script>
--->
 
 <!-- Scroll-driven video playback -->
 <script>
