@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SleepLoop for Spotify</title>
+    <link rel="canonical" href="https://sleeploop.gumroad.com/l/sleeploop">
+    <meta property="og:title" content="SleepLoop for Spotify">
+    <meta property="og:type" content="product">
+    <meta property="og:url" content="https://sleeploop.gumroad.com/l/sleeploop">
+    <meta property="og:image" content="https://public-files.gumroad.com/2edylhmasss8h88qm10s5obx8d41">
+    <style>html,body{margin:0;padding:0;height:100%;overflow:hidden}iframe{display:block;width:100%;height:100%;border:0}</style>
+  </head>
+  <body>
+    <iframe
+      id="gumroad-landing-frame"
+      src="/l/ynjmcm/landing/embed"
+      title="SleepLoop for Spotify"
+      sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+    ></iframe>
+    <script nonce="TV85UT8pxiqBwf9pMaOcXvxyYelPN6UPOydykuGqKu8=" data-cfasync="false">
+      var frame = document.getElementById("gumroad-landing-frame");
+      var BASE_CHECKOUT = "/l/ynjmcm?wanted=true";
+      // Whitelist the selection-state keys the checkout already accepts on the
+      // URL (see LinksController#show). The iframe is opaque-origin and untrusted,
+      // so anything not in this list is ignored even if the buy button claims it.
+      var ALLOWED_CHECKOUT_KEYS = ["variant","option","quantity","price","recurrence"];
+      function buildCheckoutUrl(base, params) {
+        if (!params || typeof params !== "object") return base;
+        try {
+          var u = new URL(base, window.location.origin);
+          for (var i = 0; i < ALLOWED_CHECKOUT_KEYS.length; i++) {
+            var k = ALLOWED_CHECKOUT_KEYS[i], v = params[k];
+            if (v == null || v === "") continue;
+            u.searchParams.set(k, String(v));
+          }
+          return u.pathname + u.search;
+        } catch (_e) { return base; }
+      }
+      window.addEventListener("message", function (e) {
+        if (e.source !== frame.contentWindow || e.origin !== "null") return;
+        // String form: back-compat for any caller still sending the old signal.
+        if (e.data === "gumroad:checkout") { window.location.href = BASE_CHECKOUT; return; }
+        // Structured form: {type:"gumroad:checkout", params:{variant,quantity,price,recurrence}}.
+        if (e.data && typeof e.data === "object" && e.data.type === "gumroad:checkout") {
+          window.location.href = buildCheckoutUrl(BASE_CHECKOUT, e.data.params);
+        }
+      });
+    </script>
+  </body>
+</html>
